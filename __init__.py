@@ -412,7 +412,7 @@ def unregister():
     del bpy.types.Scene.figma_pages
     del bpy.types.Scene.figma_selected_page
     del bpy.types.Scene.figma_nodes
-
+    del bpy.types.Scene.figma_scale
 
 # This allows you to run the script directly from Blender's Text editor
 # to test the add-on without having to install it.
