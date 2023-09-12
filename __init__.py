@@ -30,7 +30,7 @@ bl_info = {
 # SHADELESS or EMISSION
 SHADER_OPTION = "EMISSION"
 # import scale divisor
-PX_TO_METER = 121.92  # 1200 DPI I think? Still ends up huge
+PX_TO_METER = 121.92  # some huge DPI number, my math must be wrong
 # Definite path to image folder if desired, otherwise the location of the\
 # .blend file will be used:
 #IMAGE_DIR = r"C:/temp/figma-images"
