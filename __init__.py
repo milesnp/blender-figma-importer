@@ -198,8 +198,9 @@ class FigmaRetrieveNodesOperator(bpy.types.Operator):
                     child_item.name = child['name']
                     child_item.key = child['id']
                     bounding_box = child['absoluteBoundingBox']
-                    child_item.x_bottom_left = bounding_box['x'] / PX_TO_METER
-                    child_item.y_bottom_left = -1 * \
+                    child_item.x_top_left = bounding_box['x'] / PX_TO_METER
+					# Figma has negative y at the top so we invert it
+                    child_item.y_top_left = -1 * \
                         bounding_box['y'] / PX_TO_METER
                     child_item.height = bounding_box['height'] / PX_TO_METER
                     child_item.width = bounding_box['width'] / PX_TO_METER
@@ -261,7 +262,7 @@ class FigmaImportNodesOperator(bpy.types.Operator):
 
     def import_plane(self, context, node):
         self.report(
-            {"INFO"}, f"Importing {node.name} to {node.x_bottom_left}, {node.y_bottom_left} with {node.height} and {node.width}. abs: {str(node.use_absolute_bb)}")
+            {"INFO"}, f"Importing {node.name} to {node.x_top_left}, {node.y_top_left} with {node.height} and {node.width}. abs: {str(node.use_absolute_bb)}")
         imagedir = self.set_image_dir()
         image_path = os.path.join(imagedir, self.get_image_name(node))
 
@@ -276,8 +277,8 @@ class FigmaImportNodesOperator(bpy.types.Operator):
 
         height = node.height * context.scene.figma_scale
         width = node.width * context.scene.figma_scale
-        x_bottom_left = node.x_bottom_left * context.scene.figma_scale
-        y_bottom_left = node.y_bottom_left * context.scene.figma_scale
+        x_top_left = node.x_top_left * context.scene.figma_scale
+        y_top_left = node.y_top_left * context.scene.figma_scale
 
         # Get the last imported object (the plane)
         plane = bpy.context.selected_objects[0]
@@ -291,9 +292,10 @@ class FigmaImportNodesOperator(bpy.types.Operator):
         plane.scale.x = scale_x
         plane.scale.y = scale_y
 
-        # Set the position of the plane based on the bottom-left coordinates
-        plane.location.x = x_bottom_left + (width / 2.0)
-        plane.location.y = y_bottom_left - (height / 2.0)
+        # Set the position of the plane based on the top-left coordinates
+        # Figma has negative y at the top so we subtract the height
+        plane.location.x = x_top_left + (width / 2.0)
+		plane.location.y = y_top_left - (height / 2.0)
 
         plane.name = node.name
 
@@ -329,8 +331,8 @@ class FigmaItem(bpy.types.PropertyGroup):
 
 class FigmaNode(FigmaItem):
     parent: bpy.props.StringProperty(name="Parent Page")
-    x_bottom_left: bpy.props.FloatProperty(name="Bottom Left X")
-    y_bottom_left: bpy.props.FloatProperty(name="Bottom Left Y")
+    x_top_left: bpy.props.FloatProperty(name="Top Left X")
+    y_top_left: bpy.props.FloatProperty(name="Top Left Y")
     width: bpy.props.FloatProperty(name="width")
     height: bpy.props.FloatProperty(name="height")
     use_absolute_bb: bpy.props.BoolProperty(name="text?")
